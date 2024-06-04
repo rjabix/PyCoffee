@@ -1,0 +1,45 @@
+/*==================== BASE ====================*/
+* {
+    padding: 0;
+    margin: 0;
+}
+
+QWidget#main_menu {
+    background-color: #222222;
+    color: #000000;
+    font-family: "Poppins", sans-serif;
+    font-size: 15px;
+    transition: all 0.2s ease;
+}
+
+QWidget#main_menu_button {
+    height: 350px;
+    width: 300px;
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: #2e2e2e;
+    transition: 0.5s ease-in-out;
+}
+
+QWidget#main_menu_button:hover {
+    background: #89ec5b;
+}
+
+QWidget#main_menu_button QPushButton {
+    height: 80px;
+    width: 80px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 50px;
+    color: #000000;
+    background-color: #2e2e2e;
+    transition: 0.5s ease-in-out;
+}
+
+QWidget#main_menu_button QPushButton:hover {
+    color: #2e2e2e;
+    background-color: #89ec5b;
+}
