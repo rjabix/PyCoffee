@@ -1,8 +1,9 @@
-from views.orderWidget import OrderWidget
+from views.CartWidget import CartWidget
 from views.EditMenuWidget import EditMenuWidget
 from views.MenuWidget import MenuWidget
 from models.itemModel import ItemModel
 from models.OrderModel import OrderModel
+from controllers.CartController import CartController
 from PySide6.QtGui import QAction, QFont
 from PySide6.QtWidgets import (
     QApplication,
@@ -58,21 +59,22 @@ class MainWindow(QMainWindow):
         main_menu.setLayout(main_menu_layout)
 
         # Tworzenie stron
-        order_page = MenuWidget(itemModel)
+        menu_page = MenuWidget(itemModel)
         edit_page = EditMenuWidget(itemModel)
+        cart_page = CartWidget(self.itemModel, self.orderModel)
 
         # Додавання сторінок до stacked_widget
         self.stacked_widget.addWidget(main_menu)
-        self.stacked_widget.addWidget(order_page)
+        self.stacked_widget.addWidget(menu_page)
         self.stacked_widget.addWidget(edit_page)
         # self.stacked_widget.addWidget(report_page)
-        # self.stacked_widget.addWidget(search_page)
+        self.stacked_widget.addWidget(cart_page)
 
         layout.addWidget(self.stacked_widget)
         main_widget.setLayout(layout)
 
         # Підключення кнопок до сторінок
-        order_button.clicked.connect(lambda: self.stacked_widget.setCurrentWidget(order_page))
+        order_button.clicked.connect(lambda: self.stacked_widget.setCurrentWidget(menu_page))
         storage_button.clicked.connect(lambda: self.stacked_widget.setCurrentWidget(edit_page))
         # report_button.clicked.connect(lambda: self.stacked_widget.setCurrentWidget(report_page))
         # search_button.clicked.connect(lambda: self.stacked_widget.setCurrentWidget(search_page))
@@ -92,7 +94,7 @@ class MainWindow(QMainWindow):
         main_action = QAction("Główna", self)
         main_action.triggered.connect(lambda: self.stacked_widget.setCurrentWidget(main_menu))
         order_action = QAction("Złożyć zamówienie", self)
-        order_action.triggered.connect(lambda: self.stacked_widget.setCurrentWidget(order_page))
+        order_action.triggered.connect(lambda: self.stacked_widget.setCurrentWidget(menu_page))
         storage_action = QAction("Zmienić produkty w menu", self)
         storage_action.triggered.connect(lambda: self.stacked_widget.setCurrentWidget(edit_page))
         report_action = QAction("Statystyka", self)
@@ -102,3 +104,13 @@ class MainWindow(QMainWindow):
         edit_menu.addAction(order_action)
         edit_menu.addAction(storage_action)
         edit_menu.addAction(report_action)
+
+        cart_menu = menubar.addMenu("Koszyk")
+
+        cart_action = QAction("Koszyk", self)
+        cart_action.triggered.connect(lambda: self.stacked_widget.setCurrentWidget(cart_page))
+        clear_action = QAction("Wyczyść koszyk", self)
+        clear_action.triggered.connect(lambda: CartController.clear_cart())
+
+        cart_menu.addAction(cart_action)
+        cart_menu.addAction(clear_action)

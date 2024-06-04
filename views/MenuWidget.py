@@ -74,5 +74,7 @@ class MenuWidget(QWidget):
 
     def item_button_clicked(self):
         button = self.sender()
-        print(f"Button clicked: {button}")
+        print(f"Button clicked: {str(button)}")
+        menuController = MenuController(self.itemModel)
+        menuController.add_item_to_cart(str(button))
 

@@ -1,4 +1,3 @@
-
 class OrderModel:
     def __init__(self, database):
         self.db = database
@@ -14,7 +13,7 @@ class OrderModel:
             print("Table creation error: ", e)
 
     def addOrderToDb(self, total: float, profit: float, items: str):
-        query = ("INSERT INTO items "
+        query = ("INSERT INTO orders "
                  "(total, profit, items) "
                  "VALUES (?, ?, ?)")
         values = (total, profit, items)
