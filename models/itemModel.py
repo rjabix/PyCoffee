@@ -47,3 +47,13 @@ class ItemModel:
             print("Item deleted")
         except Exception as e:
             print("Item deletion error: ", e)
+
+    def updateItem(self, name, **kwargs):
+        fields = ', '.join([f"{key} = :{key}" for key in kwargs.keys()])
+        query = f"UPDATE items SET {fields} WHERE name = :name"
+        kwargs['name'] = name
+        try:
+            self.db.execute_query(query, kwargs)
+            print("Curtain updated")
+        except Exception as e:
+            print("Curtain update error: ", e)

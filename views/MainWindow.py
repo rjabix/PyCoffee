@@ -2,7 +2,8 @@ from views.orderWidget import OrderWidget
 from views.EditMenuWidget import EditMenuWidget
 from views.MenuWidget import MenuWidget
 from models.itemModel import ItemModel
-from PySide6.QtGui import QAction
+from models.OrderModel import OrderModel
+from PySide6.QtGui import QAction, QFont
 from PySide6.QtWidgets import (
     QApplication,
     QMainWindow,
@@ -14,10 +15,11 @@ from PySide6.QtWidgets import (
 
 
 class MainWindow(QMainWindow):
-    def __init__(self, itemModel: ItemModel):
+    def __init__(self, itemModel: ItemModel, orderModel: OrderModel):
         super().__init__()
 
         self.itemModel = itemModel
+        self.orderModel = orderModel
 
         self.setWindowTitle("Kawiarnia PyCoffee")
         self.setFixedHeight(600)
@@ -40,20 +42,23 @@ class MainWindow(QMainWindow):
         # Tworzenie przycisków
         order_button = QPushButton("Złożyć zamówienie")
         order_button.setObjectName("main_menu_button")
+        order_button.setFont(QFont("Georgia", 20))
         main_menu_layout.addWidget(order_button)
 
-        storage_button = QPushButton("Zmienić produkty w menu")
+        storage_button = QPushButton("Zmienić produkty \nw menu")
         storage_button.setObjectName("main_menu_button")
+        storage_button.setFont(QFont("Georgia", 20))
         main_menu_layout.addWidget(storage_button)
 
-        report_button = QPushButton("Historia zamówień oraz statystyka")
+        report_button = QPushButton("Historia zamówień \noraz statystyka")
         report_button.setObjectName("main_menu_button")
+        report_button.setFont(QFont("Georgia", 20))
         main_menu_layout.addWidget(report_button)
 
         main_menu.setLayout(main_menu_layout)
 
         # Tworzenie stron
-        order_page = MenuWidget()
+        order_page = MenuWidget(itemModel)
         edit_page = EditMenuWidget(itemModel)
 
         # Додавання сторінок до stacked_widget

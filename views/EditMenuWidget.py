@@ -25,8 +25,9 @@ class EditMenuWidget(QWidget):
             "Inne": 3
         }
 
-        self.setWindowTitle("Dodać produkt do menu")
+        self.setWindowTitle("Edytować menu")
 
+        # Add to db
         self.MainLayout = QVBoxLayout()
         top_label = QLabel("Dodać produkt do menu")
 
@@ -54,7 +55,7 @@ class EditMenuWidget(QWidget):
         url_label = QLabel("URL obrazka z głównego folderu projektu (opcjonalnie)")
         self.url_edit = QLineEdit()
 
-        # Add widgets to the layout
+        # Add widgets to the add_layout
         FormLayout.addWidget(top_label)
         FormLayout.addRow(type_label, self.type_combo)
         FormLayout.addRow(name_label, self.name_edit)
@@ -66,6 +67,16 @@ class EditMenuWidget(QWidget):
         self.addButton.setFixedHeight(50)
         self.addButton.clicked.connect(self.add_button_clicked)
         FormLayout.addWidget(self.addButton)
+
+        self.editButton = QPushButton("Edytować produkt w menu (za nazwą)")
+        self.editButton.setFixedHeight(50)
+        self.editButton.clicked.connect(self.edit_button_clicked)
+        FormLayout.addWidget(self.editButton)
+
+        self.deleteButton = QPushButton("Usunąć produkt w menu (za nazwą)")
+        self.deleteButton.setFixedHeight(50)
+        self.deleteButton.clicked.connect(self.delete_button_clicked)
+        FormLayout.addWidget(self.deleteButton)
 
         self.MainLayout.addLayout(FormLayout)
 
@@ -79,6 +90,24 @@ class EditMenuWidget(QWidget):
             editMenuController.add_item_menu(self.TypeDictionary[self.type_combo.currentText()], self.name_edit.text(),
                                              int(self.price_edit.text()), int(self.cost_edit.text()),
                                              self.url_edit.text())
+        except ValueError as e:
+            show_error_message(str(e))
+            return
+
+    def delete_button_clicked(self):
+        try:
+            editMenuController = EditMenuController(self.itemModel)
+            editMenuController.delete_item_menu(self.name_edit.text())
+        except ValueError as e:
+            show_error_message(str(e))
+            return
+
+    def edit_button_clicked(self):
+        try:
+            editMenuController = EditMenuController(self.itemModel)
+            editMenuController.edit_item_menu(self.TypeDictionary[self.type_combo.currentText()], self.name_edit.text(),
+                                              int(self.price_edit.text()), int(self.cost_edit.text()),
+                                              self.url_edit.text())
         except ValueError as e:
             show_error_message(str(e))
             return
