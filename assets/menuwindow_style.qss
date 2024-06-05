@@ -43,3 +43,18 @@ QWidget#menu_item_button QPushButton:hover {
     color: #2e2e2e;
     background-color: #89ec5b;
 }
+
+QWidget#cart_item_button {
+    height: 30px;
+    width: 30px;
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: #2e2e2e;
+}
+
+QWidget#cart_item_button QPushButton:hover {
+    color: #2e2e2e;
+    background-color: #89ec5b;
+}

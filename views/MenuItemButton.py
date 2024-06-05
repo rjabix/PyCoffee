@@ -7,7 +7,8 @@ class MenuItemButton(QPushButton):
     def __init__(self, name: str, price, image_path):
         super().__init__()
 
-        self._name = '\n'.join(name.split())
+        self._name = name
+        self._text = '\n'.join(name.split())
 
         if image_path:
             self.image_path = image_path
@@ -17,7 +18,7 @@ class MenuItemButton(QPushButton):
         with open("assets/menuitem_style.qss", "r") as f:
             self.setStyleSheet(f.read())
 
-        layout = QHBoxLayout()
+        self.layout = QHBoxLayout()
 
         # Create label for image
         image_label = QLabel()
@@ -30,33 +31,34 @@ class MenuItemButton(QPushButton):
         image_label.setFixedSize(175, 175)
         #image_label.setScaledContents(True)  # Scale image to fit the label
         image_label.setAlignment(Qt.AlignCenter)
-        layout.addWidget(image_label)
+        self.layout.addWidget(image_label)
 
         # Create label for text
-        name_label = QLabel(self._name)
+        name_label = QLabel(self._text)
         name_label.setObjectName("menu_item_name")
         name_label.setAlignment(Qt.AlignRight)
 
-        font = QFont()
-        font.setFamily("EB Garamond")
-        font.setPointSize(25)
-        name_label.setFont(font)
+        # szrift
+        self.font = QFont()
+        self.font.setFamily("EB Garamond")
+        self.font.setPointSize(25)
+        name_label.setFont(self.font)
 
         price_label = QLabel(f"{str(price)} zł")
         price_label.setObjectName("menu_item_price")
         price_label.setAlignment(Qt.AlignRight)
 
-        font.setFamily("French Script MT")
-        font.setPointSize(15)
-        price_label.setFont(font)
+        self.font.setFamily("French Script MT")
+        self.font.setPointSize(15)
+        price_label.setFont(self.font)
 
-        right_vertical_layout = QVBoxLayout()
-        right_vertical_layout.addWidget(name_label)
-        right_vertical_layout.addWidget(price_label)
+        self.right_vertical_layout = QVBoxLayout()
+        self.right_vertical_layout.addWidget(name_label)
+        self.right_vertical_layout.addWidget(price_label)
 
-        layout.addLayout(right_vertical_layout)
+        self.layout.addLayout(self.right_vertical_layout)
         # Set the layout on the button
-        self.setLayout(layout)
+        self.setLayout(self.layout)
 
         # Ensure the button expands with the layout
         self.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)

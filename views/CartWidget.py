@@ -1,9 +1,10 @@
 from PySide6.QtCore import Slot
-from PySide6.QtGui import Qt
-from PySide6.QtWidgets import QWidget, QVBoxLayout, QLabel, QPushButton
+from PySide6.QtGui import Qt, QFont
+from PySide6.QtWidgets import QWidget, QVBoxLayout, QLabel, QPushButton, QScrollArea
 from models.itemModel import ItemModel
 from models.OrderModel import OrderModel
 from controllers.CartController import CartController
+from views.CartItemButton import CartItemButton
 
 
 class CartWidget(QWidget):
@@ -13,41 +14,72 @@ class CartWidget(QWidget):
         self.itemModel = itemModel
         self.orderModel = orderModel
 
-        self.cartController = CartController()
+        self.cartController = CartController(itemModel)
         self.cartController.cart_changed.connect(self.update_widget)
+
+        with open("assets/menuwindow_style.qss", "r") as f:
+            self.setStyleSheet(f.read())
 
         self.setWindowTitle("Koszyk")
 
-        #with open("assets/cartwindow_style.qss", "r") as f:
+        # with open("assets/cartwindow_style.qss", "r") as f:
         #    self.setStyleSheet(f.read())
 
         self.layout = QVBoxLayout()
         self.setLayout(self.layout)
 
+        font = QFont()
+        font.setFamily("EB Garamond")
+        font.setPointSize(25)
+
         label = QLabel("Koszyk")
+        label.setFont(font)
         self.layout.addWidget(label)
         label.setAlignment(Qt.AlignCenter)
 
-        self.cart_items = []
+        self.scroll_area = QScrollArea()
+        self.scroll_area.setWidgetResizable(True)
+        self.layout.addWidget(self.scroll_area)
 
-        self.total_price = 0
+        # Create a new widget for the scroll area
+        scroll_widget = QWidget()
+        scroll_layout = QVBoxLayout()
+        scroll_widget.setLayout(scroll_layout)
+        self.scroll_area.setWidget(scroll_widget)
 
-        self.total_price_label = QLabel(f"Suma: {self.total_price} zł")
+        self.total_price_label = QLabel(f"Suma: 0 zł")
+        self.total_price_label.setFont(font)
         self.layout.addWidget(self.total_price_label)
 
         checkout_button = QPushButton("Zapłacić")
+        checkout_button.setFont(font)
+        checkout_button.setObjectName("menu_item_button")
+        checkout_button.setFixedHeight(75)
+        checkout_button.clicked.connect(self.cartController.checkout)
         self.layout.addWidget(checkout_button)
+
+    def clear_cart_layout(self):
+        layout = self.scroll_area.widget().layout()
+        if layout is not None:
+            while layout.count():
+                child = layout.takeAt(0)
+                if child.widget():
+                    child.widget().deleteLater()
 
     @Slot()
     def update_widget(self):
-        self.clear_layout()
+        self.clear_cart_layout()
         print("Updating cart widget self")
-        label = QLabel("update")
-        self.layout.addWidget(label)
+        for item in self.cartController.cart_list:
+            found_item = self.cartController.get_item_by_name(item)
+            pickedButton = CartItemButton(found_item[0][2], found_item[0][3], found_item[0][5])
+            pickedButton.number_changed.connect(self.update_total_price)
+            pickedButton.setObjectName("cart_item_button")
+            self.scroll_area.widget().layout().addWidget(pickedButton)
+        self.update_total_price()
 
-    def clear_layout(self):
-        while self.layout.count():
-            child = self.layout.takeAt(0)
-            if child.widget():
-                child.widget().deleteLater()
+    @Slot()
+    def update_total_price(self):
+        self.total_price_label.setText(f"Suma: \
+        {self.cartController.get_total_price(self.scroll_area.widget().layout())} zł")
 

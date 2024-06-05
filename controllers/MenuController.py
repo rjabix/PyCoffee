@@ -7,7 +7,7 @@ from controllers.CartController import CartController
 class MenuController:
     def __init__(self, itemModel: ItemModel):
         self.itemModel = itemModel
-        self.cartController = CartController()
+        self.cartController = CartController(itemModel)
 
     def get_items_by_type(self, type):
         self.itemModel.db.connect()

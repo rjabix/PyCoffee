@@ -1,7 +1,6 @@
 from PySide6.QtCore import Qt
-from PySide6.QtGui import QIntValidator
 from PySide6.QtWidgets import QWidget, QTabWidget, QVBoxLayout, QHBoxLayout, QLabel, QPushButton, QScrollArea, \
-    QLineEdit, QSizePolicy, QGridLayout
+    QLineEdit, QSizePolicy, QGridLayout, QTabBar
 from views.MenuItemButton import MenuItemButton
 from models.itemModel import ItemModel
 from controllers.MenuController import MenuController
@@ -25,13 +24,14 @@ class MenuWidget(QWidget):
         with open("assets/menuwindow_style.qss", "r") as f:
             self.setStyleSheet(f.read())
 
-        self.tab_widget = QTabWidget()
+        self.tab_widget = CustomTabWidget()
 
         self.beverages_tab = self.create_tab("Napój")
         self.food_tab = self.create_tab("Jedzenie")
         self.dessert_tab = self.create_tab("Deser")
         self.other_tab = self.create_tab("Inne")
         self.search_tab = self.create_search_tab()
+        self.search_items("")
 
         # Add tabs to the tab widget
         self.tab_widget.addTab(self.beverages_tab, "Napoje")
@@ -82,10 +82,10 @@ class MenuWidget(QWidget):
         self.search_input = QLineEdit()
         self.search_input.setPlaceholderText("Wyszukaj produkt za nazwą")
         self.search_input.setAlignment(Qt.AlignCenter)
-        self.search_input.textChanged.connect(self.search_items)  # Connect textChanged signal to search_items method
+        self.search_input.textChanged.connect(self.search_items)
         search_tab_layout.addWidget(self.search_input)
 
-        self.search_layout = QVBoxLayout()  # Define self.search_layout
+        self.search_layout = QVBoxLayout()
 
         # Create a scrollable area for the search results
         scroll_area = QScrollArea()
@@ -104,7 +104,7 @@ class MenuWidget(QWidget):
 
         # Call getItems method with a wildcard search
         items = menuController.get_items_by_name(text)
-
+        items.sort(key=lambda x: x[1])
         # Clear the search tab
         self.clear_layout(self.search_layout)
 
@@ -129,3 +129,28 @@ class MenuWidget(QWidget):
         print(f"Button clicked: {str(button)}")
         menuController = MenuController(self.itemModel)
         menuController.add_item_to_cart(str(button))
+
+
+class CustomTabBar(QTabBar):
+    def tabSizeHint(self, index):
+        size = super().tabSizeHint(index)
+        size.setWidth(120)
+        return size
+
+
+class CustomTabWidget(QTabWidget):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.setTabBar(CustomTabBar())
+
+    def tabBar(self):
+        tab_bar = super().tabBar()
+
+        # Create a spacer item
+        spacer = QWidget()
+        spacer.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Preferred)
+
+        # Add the spacer item to the tab bar
+        tab_bar.setTabButton(tab_bar.count(), QTabBar.LeftSide, spacer)
+
+        return tab_bar
