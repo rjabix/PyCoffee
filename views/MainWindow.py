@@ -4,7 +4,7 @@ from views.MenuWidget import MenuWidget
 from models.itemModel import ItemModel
 from models.OrderModel import OrderModel
 from controllers.CartController import CartController
-from PySide6.QtGui import QAction, QFont
+from PySide6.QtGui import QAction, QFont, QFontDatabase
 from PySide6.QtWidgets import (
     QApplication,
     QMainWindow,
@@ -28,6 +28,14 @@ class MainWindow(QMainWindow):
 
         with open("assets/mainwindow_style.qss", "r") as f:
             self.setStyleSheet(f.read())
+
+        # Load the font
+        font_id = QFontDatabase.addApplicationFont("assets/fonts/EBGaramond-MediumItalic.ttf")
+        if font_id == -1:
+            print("Error loading font")
+        else:
+            font_families = QFontDatabase.applicationFontFamilies(font_id)
+            print(f"Font loaded, families: {font_families}")
 
         main_widget = QWidget()
         self.setCentralWidget(main_widget)
@@ -76,7 +84,7 @@ class MainWindow(QMainWindow):
         # Підключення кнопок до сторінок
         order_button.clicked.connect(lambda: self.stacked_widget.setCurrentWidget(menu_page))
         storage_button.clicked.connect(lambda: self.stacked_widget.setCurrentWidget(edit_page))
-        # report_button.clicked.connect(lambda: self.stacked_widget.setCurrentWidget(report_page))
+        report_button.clicked.connect(lambda: self.stacked_widget.setCurrentWidget(report_page))
         # search_button.clicked.connect(lambda: self.stacked_widget.setCurrentWidget(search_page))
 
         # Створення меню

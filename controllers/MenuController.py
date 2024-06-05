@@ -5,14 +5,14 @@ from controllers.CartController import CartController
 
 
 class MenuController:
-    def __init__(self, database: ItemModel):
-        self.db = database
+    def __init__(self, itemModel: ItemModel):
+        self.itemModel = itemModel
         self.cartController = CartController()
 
     def get_items_by_type(self, type):
-        self.db.db.connect()
-        data = self.db.getItems(type=type)
-        self.db.db.disconnect()
+        self.itemModel.db.connect()
+        data = self.itemModel.getItems(type=type)
+        self.itemModel.db.disconnect()
         return data
 
     def add_item_to_cart(self, name):
@@ -25,3 +25,9 @@ class MenuController:
             msg_box.setText(str(message))
             msg_box.setStandardButtons(QMessageBox.Ok)
             msg_box.exec()
+
+    def get_items_by_name(self, name: str):
+        self.itemModel.db.connect()
+        data = self.itemModel.getItems(name=f'{name.capitalize()}*')
+        self.itemModel.db.disconnect()
+        return data

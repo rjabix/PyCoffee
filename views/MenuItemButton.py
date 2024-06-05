@@ -4,10 +4,10 @@ from PySide6.QtCore import Qt
 
 
 class MenuItemButton(QPushButton):
-    def __init__(self, name, price, image_path):
+    def __init__(self, name: str, price, image_path):
         super().__init__()
 
-        self._name = name
+        self._name = '\n'.join(name.split())
 
         if image_path:
             self.image_path = image_path
@@ -22,10 +22,14 @@ class MenuItemButton(QPushButton):
         # Create label for image
         image_label = QLabel()
         pixmap = QPixmap(f"assets/menuitems_photos/{self.image_path}")
+        pixmap = pixmap.scaled(175, 175, Qt.KeepAspectRatio, Qt.SmoothTransformation)
         image_label.setPixmap(pixmap)
         if pixmap.isNull():
             image_label.setText("Image not found")
+
+        image_label.setFixedSize(175, 175)
         #image_label.setScaledContents(True)  # Scale image to fit the label
+        image_label.setAlignment(Qt.AlignCenter)
         layout.addWidget(image_label)
 
         # Create label for text
@@ -34,7 +38,7 @@ class MenuItemButton(QPushButton):
         name_label.setAlignment(Qt.AlignRight)
 
         font = QFont()
-        font.setFamily("French Script MT")
+        font.setFamily("EB Garamond")
         font.setPointSize(25)
         name_label.setFont(font)
 

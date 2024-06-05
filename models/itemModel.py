@@ -28,10 +28,19 @@ class ItemModel:
         except Exception as e:
             print("Item addition error: ", e)
 
-    def getItems(self, **kwargs):  # type = 0 nprz
-        fields = 'AND '.join([f"{key} = ?" for key in kwargs.keys()])
+    def getItems(self, **kwargs):
+        fields = []
+        values = []
+        for key, value in kwargs.items():
+            if isinstance(value, str) and value.endswith('*'):
+                fields.append(f"{key} LIKE ?")
+                values.append(value[:-1] + '%')  # Replace '*' with '%' for SQL wildcard searches
+            else:
+                fields.append(f"{key} = ?")
+                values.append(value)
+        fields = ' AND '.join(fields)
         query = f"SELECT * FROM items WHERE {fields}"
-        values = tuple(kwargs.values())
+        values = tuple(values)
 
         try:
             return self.db.fetch_query(query, values)
@@ -54,6 +63,6 @@ class ItemModel:
         kwargs['name'] = name
         try:
             self.db.execute_query(query, kwargs)
-            print("Curtain updated")
+            print("Item updated")
         except Exception as e:
-            print("Curtain update error: ", e)
+            print("Item update error: ", e)

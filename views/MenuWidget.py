@@ -11,6 +11,7 @@ class MenuWidget(QWidget):
     def __init__(self, itemModel: ItemModel):
         super().__init__()
         self.itemModel = itemModel
+        self.menuController = MenuController(self.itemModel)
 
         self.TypeDictionary = {
             "Napój": 0,
@@ -30,20 +31,21 @@ class MenuWidget(QWidget):
         self.food_tab = self.create_tab("Jedzenie")
         self.dessert_tab = self.create_tab("Deser")
         self.other_tab = self.create_tab("Inne")
+        self.search_tab = self.create_search_tab()
 
         # Add tabs to the tab widget
         self.tab_widget.addTab(self.beverages_tab, "Napoje")
         self.tab_widget.addTab(self.food_tab, "Jedzenie")
         self.tab_widget.addTab(self.dessert_tab, "Desery")
         self.tab_widget.addTab(self.other_tab, "Inne")
+        self.tab_widget.addTab(self.search_tab, "Wyszukiwarka")
 
         layout = QVBoxLayout()
         layout.addWidget(self.tab_widget)
         self.setLayout(layout)
 
     def create_tab(self, tab_name):
-        menuController = MenuController(self.itemModel)
-        items = menuController.get_items_by_type(self.TypeDictionary[tab_name])
+        items = self.menuController.get_items_by_type(self.TypeDictionary[tab_name])
         # Create a scrollable area for the tab content
         scroll_area = QScrollArea()
         scroll_area.setWidgetResizable(True)
@@ -72,9 +74,58 @@ class MenuWidget(QWidget):
         # Return the scrollable area as the tab widget
         return scroll_area
 
+    def create_search_tab(self):
+        search_tab = QWidget()
+        search_tab_layout = QVBoxLayout()
+        search_tab.setLayout(search_tab_layout)
+
+        self.search_input = QLineEdit()
+        self.search_input.setPlaceholderText("Wyszukaj produkt za nazwą")
+        self.search_input.setAlignment(Qt.AlignCenter)
+        self.search_input.textChanged.connect(self.search_items)  # Connect textChanged signal to search_items method
+        search_tab_layout.addWidget(self.search_input)
+
+        self.search_layout = QVBoxLayout()  # Define self.search_layout
+
+        # Create a scrollable area for the search results
+        scroll_area = QScrollArea()
+        scroll_area.setWidgetResizable(True)
+        content_widget = QWidget()
+        content_widget.setLayout(self.search_layout)
+        scroll_area.setWidget(content_widget)
+
+        search_tab_layout.addWidget(scroll_area)  # Add scroll_area to search_tab_layout instead of self.search_layout
+
+        return search_tab
+
+    def search_items(self, text):
+        # Create an instance of MenuController
+        menuController = MenuController(self.itemModel)
+
+        # Call getItems method with a wildcard search
+        items = menuController.get_items_by_name(text)
+
+        # Clear the search tab
+        self.clear_layout(self.search_layout)
+
+        # Add the returned items to the search tab
+        for item in items:
+            menu_item_button = MenuItemButton(item[2], item[3], item[5])  # Create MenuItemButton instance
+            menu_item_button.setObjectName("menu_item_button")
+            menu_item_button.clicked.connect(self.item_button_clicked)
+            self.search_layout.addWidget(menu_item_button)
+
+        # Update the search layout
+        self.search_layout.update()
+
+    def clear_layout(self, layout):
+        while layout.count():
+            child = layout.takeAt(0)
+            if child.widget():
+                child.widget().deleteLater()
+
     def item_button_clicked(self):
         button = self.sender()
         print(f"Button clicked: {str(button)}")
         menuController = MenuController(self.itemModel)
         menuController.add_item_to_cart(str(button))
-

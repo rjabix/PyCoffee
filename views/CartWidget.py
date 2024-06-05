@@ -1,3 +1,4 @@
+from PySide6.QtCore import Slot
 from PySide6.QtGui import Qt
 from PySide6.QtWidgets import QWidget, QVBoxLayout, QLabel, QPushButton
 from models.itemModel import ItemModel
@@ -13,44 +14,40 @@ class CartWidget(QWidget):
         self.orderModel = orderModel
 
         self.cartController = CartController()
+        self.cartController.cart_changed.connect(self.update_widget)
 
         self.setWindowTitle("Koszyk")
 
         #with open("assets/cartwindow_style.qss", "r") as f:
         #    self.setStyleSheet(f.read())
 
-        layout = QVBoxLayout()
-        self.setLayout(layout)
+        self.layout = QVBoxLayout()
+        self.setLayout(self.layout)
 
-        self.label = QLabel("Koszyk")
-        layout.addWidget(self.label)
-        self.label.setAlignment(Qt.AlignCenter)
+        label = QLabel("Koszyk")
+        self.layout.addWidget(label)
+        label.setAlignment(Qt.AlignCenter)
 
         self.cart_items = []
 
         self.total_price = 0
 
         self.total_price_label = QLabel(f"Suma: {self.total_price} zł")
-        layout.addWidget(self.total_price_label)
+        self.layout.addWidget(self.total_price_label)
 
-        self.checkout_button = QPushButton("Zapłacić")
-        layout.addWidget(self.checkout_button)
+        checkout_button = QPushButton("Zapłacić")
+        self.layout.addWidget(checkout_button)
 
-    def add_item(self, item):
-        self.cart_items.append(item)
-        self.total_price += item[1]
-        self.total_price_label.setText(f"Suma: {self.total_price} zł")
-
-    def remove_item(self, item):
-        self.cart_items.remove(item)
-        self.total_price -= item[1]
-        self.total_price_label.setText(f"Suma: {self.total_price} zł")
-
-    @classmethod #треба було так зробити, щоб мати змогу у карт_контролері викликати цей метод
-    def update_widget_cls(cls):
-        print("Updating cart widget cls")
-        cls.update_widget_self()
-
-    def update_widget_self(self):
+    @Slot()
+    def update_widget(self):
+        self.clear_layout()
         print("Updating cart widget self")
+        label = QLabel("update")
+        self.layout.addWidget(label)
+
+    def clear_layout(self):
+        while self.layout.count():
+            child = self.layout.takeAt(0)
+            if child.widget():
+                child.widget().deleteLater()
 

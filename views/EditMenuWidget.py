@@ -88,7 +88,7 @@ class EditMenuWidget(QWidget):
         try:
             editMenuController = EditMenuController(self.itemModel)
             editMenuController.add_item_menu(self.TypeDictionary[self.type_combo.currentText()], self.name_edit.text(),
-                                             int(self.price_edit.text()), int(self.cost_edit.text()),
+                                             self.price_edit.text(), self.cost_edit.text(),
                                              self.url_edit.text())
         except ValueError as e:
             show_error_message(str(e))

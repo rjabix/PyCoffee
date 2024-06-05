@@ -16,6 +16,8 @@ def main():
     itemModel = ItemModel(db)
     orderModel = OrderModel(db)
 
+    print(itemModel.getItems(name="E*"))
+
     mainWindow = MainWindow(itemModel, orderModel)
 
     mainWindow.show()

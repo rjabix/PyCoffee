@@ -49,7 +49,7 @@ class EditMenuController:
         self.itemModel.deleteItem(name)
         self.itemModel.db.disconnect()
 
-    def edit_item_menu(self, type, name, price, cost, url):
+    def edit_item_menu(self, type: int, name: str, price: str, cost: str, url):
         if len(name) > 100 or len(url) > 100:
             raise ValueError("The product name or URL is too long.")
 
@@ -63,5 +63,5 @@ class EditMenuController:
 
             # Your logic for adding the product goes here
 
-        self.itemModel.updateItem(name, type=type, price=price, cost=cost, photourl=url)
+        self.itemModel.updateItem(name, type=type, price=int(price), cost=int(cost), photourl=url)
         self.itemModel.db.disconnect()

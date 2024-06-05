@@ -1,27 +1,35 @@
+from PySide6.QtCore import QObject, Signal
 
-import views.CartWidget
 
+class CartController(QObject):
+    _instance = None
+    _initialized = False
+    cart_changed = Signal()
 
-class CartController():
-    cart_list = []  # statyczna lista
+    def __new__(cls, *args, **kwargs):
+        if not cls._instance:
+            cls._instance = super(CartController, cls).__new__(cls, *args, **kwargs)
+        return cls._instance
 
-    @classmethod  # classmethod = полустатичний метод, який можна викликати через клас, а не через об'єкт класу
-    def add(cls, product):
-        if product not in cls.cart_list:
-            cls.cart_list.append(product)
-            views.CartWidget.CartWidget.update_widget_cls()
+    def __init__(self):
+        if CartController._initialized:
+            return
+        super().__init__()
+        self.cart_list = []
+        CartController._initialized = True
+
+    def add(self, product):
+        if product not in self.cart_list:
+            self.cart_list.append(product)
+            self.cart_changed.emit()
         else:
             raise Exception("Produkt już jest w koszyku :)")
 
-    @classmethod
-    def remove(cls, product):
-        cls.cart_list.remove(product)
+    def remove(self, product):
+        self.cart_list.remove(product)
+        self.cart_changed.emit()
 
-    @classmethod
-    def checkout(cls):
-        ...
-
-    @classmethod
-    def clear_cart(cls):
-        cls.cart_list = []
+    def clear_cart(self):
+        self.cart_list = []
         print("Koszyk wyczyszczony")
+        self.cart_changed.emit()
