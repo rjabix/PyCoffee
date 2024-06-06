@@ -117,8 +117,10 @@ class MainWindow(QMainWindow):
 
         cart_action = QAction("Koszyk", self)
         cart_action.triggered.connect(lambda: self.stacked_widget.setCurrentWidget(cart_page))
+
+        cartController = CartController(self.itemModel)
         clear_action = QAction("Wyczyść koszyk", self)
-        clear_action.triggered.connect(lambda: CartController.clear_cart())
+        clear_action.triggered.connect(lambda: cartController.clear_cart())
 
         cart_menu.addAction(cart_action)
         cart_menu.addAction(clear_action)

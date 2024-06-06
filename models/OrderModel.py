@@ -1,11 +1,15 @@
+from datetime import datetime
+
+
 class OrderModel:
     def __init__(self, database):
         self.db = database
         query = ("CREATE TABLE IF NOT EXISTS orders ("
                  "id INTEGER PRIMARY KEY AUTOINCREMENT,"
-                 "total INTEGER NOT NULL,"
+                 "total REAL NOT NULL,"
                  "profit REAL NOT NULL,"
-                 "items VARCHAR(400) NOT NULL )")
+                 "items VARCHAR(400) NOT NULL,"
+                 "date_time TEXT NOT NULL )")
         try:
             self.db.execute_query(query)
             print("Table created")
@@ -14,9 +18,9 @@ class OrderModel:
 
     def addOrderToDb(self, total: float, profit: float, items: str):
         query = ("INSERT INTO orders "
-                 "(total, profit, items) "
-                 "VALUES (?, ?, ?)")
-        values = (total, profit, items)
+                 "(total, profit, items, date_time) "
+                 "VALUES (?, ?, ?, ?)")
+        values = (total, profit, items, datetime.now().strftime("%Y-%m-%d"))
 
         try:
             self.db.execute_query(query, values)

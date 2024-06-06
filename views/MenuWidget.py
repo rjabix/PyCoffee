@@ -110,7 +110,12 @@ class MenuWidget(QWidget):
 
         # Add the returned items to the search tab
         for item in items:
-            menu_item_button = MenuItemButton(item[2], item[3], item[5])  # Create MenuItemButton instance
+            menu_item_button = MenuItemButton(item[2], item[3], item[5])
+
+            font = menu_item_button.font
+            font.setPointSize(25)
+            menu_item_button.right_vertical_layout.itemAt(1).widget().setFont(font)
+
             menu_item_button.setObjectName("menu_item_button")
             menu_item_button.clicked.connect(self.item_button_clicked)
             self.search_layout.addWidget(menu_item_button)

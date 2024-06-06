@@ -1,6 +1,8 @@
 from PySide6.QtCore import QObject, Signal
 from models.itemModel import ItemModel
 from views.CartItemButton import CartItemButton
+from models.OrderModel import OrderModel
+
 
 class CartController(QObject):  # singleton
     _instance = None
@@ -18,7 +20,11 @@ class CartController(QObject):  # singleton
         super().__init__()
         self.itemModel = itemModel
         self.cart_list = []
+        self.orderModel = OrderModel(itemModel.db)
         CartController._initialized = True
+
+        self.total_price = 0
+        self.checkout_dict: dict = {}
 
     def add(self, product):
         if product not in self.cart_list:
@@ -42,15 +48,27 @@ class CartController(QObject):  # singleton
         print("Koszyk wyczyszczony")
         self.cart_changed.emit()
 
-    @staticmethod
-    def get_total_price(layout) -> float:
-        total_price = 0
+    def get_total_price(self, layout) -> float:
+        self.total_price = 0
+        self.checkout_dict = {}
+
         for i in range(layout.count()):
             item = layout.itemAt(i).widget()
             if isinstance(item, CartItemButton):
-                total_price += item.price * item.number
-        return total_price
+                self.total_price += item.price * item.number
+                self.checkout_dict[str(item)] = item.number
+        return self.total_price
 
-    def checkout(self):
-        print("Zapłacono")
+    def checkout_to_db(self) -> None:
+        checkout_dict = dict(sorted(self.checkout_dict.items()))  # сортування за ключем
+        items_string: str = ', '.join([f"{key} x{value}" for key, value in checkout_dict.items()])
+        # calculating profit
+        profit = 0
+        for item_in_cart, number in self.checkout_dict.items():
+            item = self.get_item_by_name(item_in_cart)[0]
+            profit += (item[3] - item[4]) * number
+        print(f"Profit: {profit}")
+        self.orderModel.db.connect()
+        self.orderModel.addOrderToDb(self.total_price, profit, items_string)
+        self.orderModel.db.disconnect()
         self.clear_cart()

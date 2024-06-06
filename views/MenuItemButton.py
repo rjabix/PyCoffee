@@ -8,7 +8,15 @@ class MenuItemButton(QPushButton):
         super().__init__()
 
         self._name = name
-        self._text = '\n'.join(name.split())
+        self._text = ''
+
+        split_name = name.split()
+        for word in split_name:
+            if 1 <= len(word) <= 4:
+                self._text += word + ' '
+            else:
+                self._text += word + '\n'
+        del split_name
 
         if image_path:
             self.image_path = image_path
@@ -38,7 +46,7 @@ class MenuItemButton(QPushButton):
         name_label.setObjectName("menu_item_name")
         name_label.setAlignment(Qt.AlignRight)
 
-        # szrift
+        # font
         self.font = QFont()
         self.font.setFamily("EB Garamond")
         self.font.setPointSize(25)
@@ -66,3 +74,6 @@ class MenuItemButton(QPushButton):
 
     def __str__(self):
         return self._name
+
+    def __len__(self):
+        return len(self._name)

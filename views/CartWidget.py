@@ -54,8 +54,8 @@ class CartWidget(QWidget):
         checkout_button = QPushButton("Zapłacić")
         checkout_button.setFont(font)
         checkout_button.setObjectName("menu_item_button")
-        checkout_button.setFixedHeight(75)
-        checkout_button.clicked.connect(self.cartController.checkout)
+        checkout_button.setFixedHeight(50)
+        checkout_button.clicked.connect(self.checkout_button_clicked)
         self.layout.addWidget(checkout_button)
 
     def clear_cart_layout(self):
@@ -69,7 +69,6 @@ class CartWidget(QWidget):
     @Slot()
     def update_widget(self):
         self.clear_cart_layout()
-        print("Updating cart widget self")
         for item in self.cartController.cart_list:
             found_item = self.cartController.get_item_by_name(item)
             pickedButton = CartItemButton(found_item[0][2], found_item[0][3], found_item[0][5])
@@ -82,4 +81,10 @@ class CartWidget(QWidget):
     def update_total_price(self):
         self.total_price_label.setText(f"Suma: \
         {self.cartController.get_total_price(self.scroll_area.widget().layout())} zł")
+
+    def checkout_button_clicked(self):
+        if not self.cartController.cart_list:
+            return
+        self.cartController.checkout_to_db()
+        self.update_widget()
 
