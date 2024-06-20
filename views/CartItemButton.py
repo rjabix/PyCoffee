@@ -47,3 +47,8 @@ class CartItemButton(MenuItemButton):
         self.horizontal_layout.addWidget(self.remove_button)
         self.right_vertical_layout.addLayout(self.horizontal_layout)
         self.number_changed.emit()
+
+    def __add__(self, other):
+        new_item = CartItemButton(self._name, self.price, self.image_path)
+        new_item.number = self.number + other.number
+        return new_item

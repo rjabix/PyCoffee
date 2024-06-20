@@ -7,6 +7,7 @@ class MenuItemButton(QPushButton):
     def __init__(self, name: str, price, image_path):
         super().__init__()
 
+        self.price = price
         self._name = name
         self._text = ''
 
@@ -77,3 +78,9 @@ class MenuItemButton(QPushButton):
 
     def __len__(self):
         return len(self._name)
+
+    def __add__(self, other):
+        return self.price + other.price
+
+    def __mul__(self, other):
+        return self.price * other.price

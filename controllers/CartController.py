@@ -56,7 +56,8 @@ class CartController(QObject):  # singleton
             item = layout.itemAt(i).widget()
             if isinstance(item, CartItemButton):
                 self.total_price += item.price * item.number
-                self.checkout_dict[str(item)] = item.number
+                if len(item) < 100:  # FIXME I use the __len__ method to check if the name length is less than 100 to put it to db
+                    self.checkout_dict[str(item)] = item.number
         return self.total_price
 
     def checkout_to_db(self) -> None:
