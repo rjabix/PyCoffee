@@ -2,12 +2,14 @@ from PySide6.QtCore import QObject, Signal
 from models.itemModel import ItemModel
 from views.CartItemButton import CartItemButton
 from models.OrderModel import OrderModel
+import models.OrdersClass
 
 
 class CartController(QObject):  # singleton
     _instance = None
     _initialized = False
     cart_changed = Signal()
+    checkout_signal = Signal()
 
     def __new__(cls, *args, **kwargs):
         if not cls._instance:
@@ -69,6 +71,8 @@ class CartController(QObject):  # singleton
             item = self.get_item_by_name(item_in_cart)[0]
             profit += (item[3] - item[4]) * number
         print(f"Profit: {profit}")
+        models.OrdersClass.add_new_order('\n'.join([f"{key} x{value}" for key, value in checkout_dict.items()]))
+        self.checkout_signal.emit()
         self.orderModel.db.connect()
         self.orderModel.addOrderToDb(self.total_price, profit, items_string)
         self.orderModel.db.disconnect()
